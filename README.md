@@ -3,40 +3,170 @@
 Copie e cole no console o seguinte comando para desativar o **bloqueio de copia e cola do site** *"Adaptativo SESI"*
 
 ```
-*TEXTO 1*
-TEXTO I
+(function() {
+    // Evita criar múltiplos botões
+    if (document.getElementById('copy-question-btn')) return;
 
-    No seu cotidiano, as populações indígenas realizavam tarefas como a caça, a pesca, a lavoura, além de participarem de festas e rituais em homenagem aos seus deuses: a Chuva, o Sol, a Lua e outros seres da natureza. O céu tinha (e em muitos casos atuais ainda tem) um papel muito importante para os indígenas: usado como referência para planejarem as atividades do dia a dia. Portanto, sabiam como funcionavam os ciclos solar e lunar e a posição de certas estrelas no céu e como isso se relacionava com as atividades na terra. E não é a geometria, a física nem a matemática que os ajudava a identificar o movimento e a posição dos astros, eram as lendas e os mitos de cada tribo que ensinavam aos indígenas tais conhecimentos.
+    // 1. Cria o botão
+    const btn = document.createElement('button');
+    btn.id = 'copy-question-btn';
+    btn.textContent = 'Questão';
+    btn.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        background-color: #30AF4A;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        transition: all 0.2s;
+    `;
+    btn.onmouseover = () => btn.style.backgroundColor = '#258f3c';
+    btn.onmouseout = () => btn.style.backgroundColor = '#30AF4A';
 
-SILVA, R. S. Comunidades quilombolas e a política ambiental territorial na Mata Atlântica. Revista Geografia em questão. v. 5, n. 01. 2012. p. 55. (Adaptado).
+    // 2. Função para mostrar o balão de fala "Copiado!"
+    function showCopiedMessage(button) {
+        // Remove qualquer pop-up existente para evitar duplicação
+        const existingPopup = document.querySelector('.copy-success-popup');
+        if (existingPopup) existingPopup.remove();
 
+        // Cria o elemento do balão
+        const popup = document.createElement('div');
+        popup.className = 'copy-success-popup';
+        popup.textContent = 'Copiado!';
 
+        // Adiciona o estilo CSS (caso ainda não exista)
+        if (!document.getElementById('popup-styles')) {
+            const style = document.createElement('style');
+            style.id = 'popup-styles';
+            style.textContent = `
+                .copy-success-popup {
+                    position: fixed;
+                    background-color: #333;
+                    color: #fff;
+                    padding: 8px 16px;
+                    border-radius: 12px;
+                    font-size: 14px;
+                    font-weight: bold;
+                    white-space: nowrap;
+                    z-index: 10000;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                    pointer-events: none;
+                    opacity: 0;
+                    transition: opacity 0.2s ease;
+                }
+                .copy-success-popup::after {
+                    content: '';
+                    position: absolute;
+                    top: 100%;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    border-width: 6px;
+                    border-style: solid;
+                    border-color: #333 transparent transparent transparent;
+                }
+            `;
+            document.head.appendChild(style);
+        }
 
+        document.body.appendChild(popup);
 
+        // Posiciona acima do botão
+        const rect = button.getBoundingClientRect();
+        const popupHeight = popup.offsetHeight;
+        const popupWidth = popup.offsetWidth;
+        popup.style.top = `${rect.top - popupHeight - 10}px`;
+        popup.style.left = `${rect.left + rect.width / 2 - popupWidth / 2}px`;
 
-TEXTO II
+        // Força reflow para então mostrar com fade
+        popup.offsetHeight;
+        popup.style.opacity = '1';
 
-    A noção de natureza na civilização ocidental é marcada pela separação homem-natureza. Em outras palavras, a natureza passou a ser vista, especialmente a partir do século XVIII, como fonte inesgotável de recursos, servindo de base para o metabolismo ilimitado da produção capitalista que, através de um modelo de razão – razão instrumental – justifica, por um lado, a exclusão dos homens da natureza e, por outro, a ação desses sobre os demais integrantes da natureza.
+        // Remove após 2 segundos
+        setTimeout(() => {
+            popup.style.opacity = '0';
+            setTimeout(() => popup.remove(), 200);
+        }, 2000);
+    }
 
-RIBEIRO, W. C.; LOBATO, W. ; OLIVEIRA, L. M. L. P. R. ; LIBERATO, R. C. A concepção de Natureza na Civilização Ocidental e a crise ambiental. Revista da Casa da Geografia de Sobral (RCGS) , v. 14, p. 7-16, 2012, p. 8
+    // 3. Lógica de extração e cópia com pop-up no lugar do alert
+    btn.onclick = async () => {
+        try {
+            // Container principal da questão
+            const examContainer = document.querySelector('[data-testid="exam-page-root"]') ||
+                                  document.querySelector('.css-vej38e');
+            if (!examContainer) {
+                alert('Não foi possível localizar a questão.');
+                return;
+            }
 
-*PERGUNTA*
-As distintas concepções de relação entre ser humano e natureza apresentadas nos dois textos podem ser explicadas pelo(a)
+            // Encontra todas as alternativas
+            const alternatives = Array.from(examContainer.querySelectorAll('.css-1q6aftr'));
+            if (!alternatives.length) {
+                alert('Nenhuma alternativa encontrada.');
+                return;
+            }
 
-*ALTERNATIVA A)*
-isolamento territorial dos povos ameríndios.
+            // Encontra todos os blocos de texto .tiptap que estão fora das alternativas
+            const allTiptap = Array.from(examContainer.querySelectorAll('.tiptap'));
+            const tiptapOutside = allTiptap.filter(el => !alternatives.some(alt => alt.contains(el)));
 
-*ALTERNATIVA B)*
-desenvolvimento do racionalismo no Ocidente.
+            // Separa: os anteriores ao último são os textos principais; o último é a pergunta
+            const textBlocks = tiptapOutside.slice(0, -1);
+            const questionBlock = tiptapOutside[tiptapOutside.length - 1];
 
-*ALTERNATIVA C)*
-superioridade intelectual dos povos ocidentais.
+            // Constrói o conteúdo formatado
+            let output = '';
 
-*ALTERNATIVA D)*
-processo de aculturação imposto aos indígenas.
+            // Textos principais
+            textBlocks.forEach((block, idx) => {
+                const content = block.innerText.trim();
+                if (content) {
+                    output += `*TEXTO ${idx + 1}*\n${content}\n\n`;
+                }
+            });
 
-*ALTERNATIVA E)*
-anacronismo cultural presente nos povos indígenas.
+            // Pergunta
+            if (questionBlock) {
+                const questionText = questionBlock.innerText.trim();
+                if (questionText) {
+                    output += `*PERGUNTA*\n${questionText}\n\n`;
+                }
+            }
 
+            // Alternativas
+            alternatives.forEach((alt, idx) => {
+                const letterSpan = alt.querySelector('.css-1qf2sxb');
+                const letter = letterSpan ? letterSpan.innerText.trim() : String.fromCharCode(65 + idx);
+                const contentDiv = alt.querySelector('.tiptap');
+                const content = contentDiv ? contentDiv.innerText.trim() : '';
+                if (content) {
+                    output += `*ALTERNATIVA ${letter}*\n${content}\n\n`;
+                }
+            });
 
-```
+            if (!output.trim()) {
+                alert('Nenhum conteúdo extraído.');
+                return;
+            }
+
+            // Copia para a área de transferência
+            await navigator.clipboard.writeText(output);
+
+            // Exibe o balão de "Copiado!" em vez do alert
+            showCopiedMessage(btn);
+        } catch (err) {
+            console.error(err);
+            alert('Erro ao copiar: ' + err.message);
+        }
+    };
+
+    document.body.appendChild(btn);
+    console.log('Verifique o canto inferior direito.');
+})();
