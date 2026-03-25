@@ -3,104 +3,40 @@
 Copie e cole no console o seguinte comando para desativar o **bloqueio de copia e cola do site** *"Adaptativo SESI"*
 
 ```
-(function() {
-    // Evita criar múltiplos botões
-    if (document.getElementById('copy-question-btn')) return;
+*TEXTO 1*
+TEXTO I
 
-    // 1. Cria o botão
-    const btn = document.createElement('button');
-    btn.id = 'copy-question-btn';
-    btn.textContent = 'Questão';
-    btn.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 9999;
-        background-color: #30AF4A;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 16px;
-        font-size: 14px;
-        font-weight: bold;
-        cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        transition: all 0.2s;
-    `;
-    btn.onmouseover = () => btn.style.backgroundColor = '#258f3c';
-    btn.onmouseout = () => btn.style.backgroundColor = '#30AF4A';
+    No seu cotidiano, as populações indígenas realizavam tarefas como a caça, a pesca, a lavoura, além de participarem de festas e rituais em homenagem aos seus deuses: a Chuva, o Sol, a Lua e outros seres da natureza. O céu tinha (e em muitos casos atuais ainda tem) um papel muito importante para os indígenas: usado como referência para planejarem as atividades do dia a dia. Portanto, sabiam como funcionavam os ciclos solar e lunar e a posição de certas estrelas no céu e como isso se relacionava com as atividades na terra. E não é a geometria, a física nem a matemática que os ajudava a identificar o movimento e a posição dos astros, eram as lendas e os mitos de cada tribo que ensinavam aos indígenas tais conhecimentos.
 
-    // 2. Lógica de extração e cópia
-    btn.onclick = async () => {
-        try {
-            // Container principal da questão
-            const examContainer = document.querySelector('[data-testid="exam-page-root"]') ||
-                                  document.querySelector('.css-vej38e');
-            if (!examContainer) {
-                alert('Não foi possível localizar a questão.');
-                return;
-            }
+SILVA, R. S. Comunidades quilombolas e a política ambiental territorial na Mata Atlântica. Revista Geografia em questão. v. 5, n. 01. 2012. p. 55. (Adaptado).
 
-            // Encontra todas as alternativas
-            const alternatives = Array.from(examContainer.querySelectorAll('.css-1q6aftr'));
-            if (!alternatives.length) {
-                alert('Nenhuma alternativa encontrada.');
-                return;
-            }
 
-            // Encontra todos os blocos de texto .tiptap que estão fora das alternativas
-            const allTiptap = Array.from(examContainer.querySelectorAll('.tiptap'));
-            const tiptapOutside = allTiptap.filter(el => !alternatives.some(alt => alt.contains(el)));
 
-            // Separa: os anteriores ao último são os textos principais; o último é a pergunta
-            const textBlocks = tiptapOutside.slice(0, -1);
-            const questionBlock = tiptapOutside[tiptapOutside.length - 1];
 
-            // Constrói o conteúdo formatado
-            let output = '';
 
-            // Textos principais
-            textBlocks.forEach((block, idx) => {
-                const content = block.innerText.trim();
-                if (content) {
-                    output += `*TEXTO ${idx + 1}*\n${content}\n\n`;
-                }
-            });
+TEXTO II
 
-            // Pergunta
-            if (questionBlock) {
-                const questionText = questionBlock.innerText.trim();
-                if (questionText) {
-                    output += `*PERGUNTA*\n${questionText}\n\n`;
-                }
-            }
+    A noção de natureza na civilização ocidental é marcada pela separação homem-natureza. Em outras palavras, a natureza passou a ser vista, especialmente a partir do século XVIII, como fonte inesgotável de recursos, servindo de base para o metabolismo ilimitado da produção capitalista que, através de um modelo de razão – razão instrumental – justifica, por um lado, a exclusão dos homens da natureza e, por outro, a ação desses sobre os demais integrantes da natureza.
 
-            // Alternativas
-            alternatives.forEach((alt, idx) => {
-                const letterSpan = alt.querySelector('.css-1qf2sxb');
-                const letter = letterSpan ? letterSpan.innerText.trim() : String.fromCharCode(65 + idx);
-                const contentDiv = alt.querySelector('.tiptap');
-                const content = contentDiv ? contentDiv.innerText.trim() : '';
-                if (content) {
-                    output += `*ALTERNATIVA ${letter}*\n${content}\n\n`;
-                }
-            });
+RIBEIRO, W. C.; LOBATO, W. ; OLIVEIRA, L. M. L. P. R. ; LIBERATO, R. C. A concepção de Natureza na Civilização Ocidental e a crise ambiental. Revista da Casa da Geografia de Sobral (RCGS) , v. 14, p. 7-16, 2012, p. 8
 
-            if (!output.trim()) {
-                alert('Nenhum conteúdo extraído.');
-                return;
-            }
+*PERGUNTA*
+As distintas concepções de relação entre ser humano e natureza apresentadas nos dois textos podem ser explicadas pelo(a)
 
-            // Copia para a área de transferência
-            await navigator.clipboard.writeText(output);
-            alert('Sucesso!\n\nFormato:\n*TEXTO 1*\n...\n*PERGUNTA*\n...\n*ALTERNATIVA A*\n...');
-        } catch (err) {
-            console.error(err);
-            alert('Erro ao copiar: ' + err.message);
-        }
-    };
+*ALTERNATIVA A)*
+isolamento territorial dos povos ameríndios.
 
-    document.body.appendChild(btn);
-    console.log('Verifique o canto inferior direito.');
-})();
+*ALTERNATIVA B)*
+desenvolvimento do racionalismo no Ocidente.
+
+*ALTERNATIVA C)*
+superioridade intelectual dos povos ocidentais.
+
+*ALTERNATIVA D)*
+processo de aculturação imposto aos indígenas.
+
+*ALTERNATIVA E)*
+anacronismo cultural presente nos povos indígenas.
+
+
 ```
